@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.heading3{
+    @apply text-lg font-bold mb-4 mt-8 
+}
