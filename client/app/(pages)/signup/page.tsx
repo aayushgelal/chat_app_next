@@ -21,9 +21,12 @@ export default function LoginPage() {
   const [Password,setPassword] =useState('');
   const handlelogin= async () => {
         const provider = new GoogleAuthProvider();
-        const user =await signInWithPopup(FirebaseAuth,provider);
+        const {user:{displayName:name,email,photoURL}} =await signInWithPopup(FirebaseAuth,provider);
         try{
-         console.log(user)
+          if(email){
+
+
+          }
 
         }catch(err){
           console.log(err)
@@ -69,7 +72,8 @@ export default function LoginPage() {
   return (
     
     <div className=' flex   p-10 flex-col items-center justify-center'>
-      <h1 className='text-2xl font-medium'>Login</h1>
+      <h1 className='text-2xl font-medium'>SignUp</h1>
+      
      <div className='px-10  pb-10 w-screen m-10 md:w-fit shadow-md rounded-lg'>
       <div className=' flex flex-col items-center justify-center  space-y-10'>
       <input placeholder='Username' value={email} onChange={validationEmail} className='logininput'/>
@@ -77,19 +81,13 @@ export default function LoginPage() {
   
       </div>
       <br></br>
-      <div className='relative right-0 w-full flex'>
-        <div className='customCheckbox'>
-          <span className='customCheckmark' />
-          <input className=' opacity-0 cursor-pointer h-0 w-0' type="checkbox"/>
-         </div>
-    Remember Me</div>
-  
+    
 
 
       <div className='flex items-center justify-center'><button onClick={handleSubmit} ><NavItem link={""} name={"Login"} size={'150px'} /></button></div>
       <div className='flex justify-around '>
-      <div className='underline cursor-pointer text-sky-600'>Forgot Password?</div>
-      <div className=' underline cursor-pointer text-sky-600'>Sign Up</div>
+      <h1 className=' text-gray-500 font-extralight'>Already Have an Account? </h1>
+      <div className=' underline cursor-pointer text-sky-600 mx-2'>Sign Up</div>
       </div>
       <br></br>
       <button className='w-full'> <div className='bg-sky-600  text-center p-2 rounded-lg text-white flex items-center justify-center ' onClick={handlelogin}><FcGoogle color='red' size={40} className='mr-5' /> Login With Google</div>

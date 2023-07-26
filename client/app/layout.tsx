@@ -2,6 +2,10 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Navbar from './components/Navbar'
+import React from 'react'
+import {store} from './store'
+import {Provider} from 'react-redux'
+
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,9 +23,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Navbar />
+
         
         
-        {children}</body>
+        {children}
+    </body>
     </html>
   )
 }
