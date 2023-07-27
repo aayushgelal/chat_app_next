@@ -13,9 +13,9 @@ const firebaseConfig = {
   storageBucket: "chat-2b95c.appspot.com",
   messagingSenderId: "507601605734",
   appId: "1:507601605734:web:5e78fdfc3685f7f00349a7",
-  measurementId: "G-MH2B8KC3CC"
+  measurementId: "G-MH2B8KC3CC",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const FirebaseAuth=getAuth(app)
+export const FirebaseAuth = getAuth(app);

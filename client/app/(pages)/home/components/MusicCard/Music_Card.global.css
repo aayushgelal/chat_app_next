@@ -1,12 +1,12 @@
 .cards-container {
-    animation: scrollAnimation 20s linear infinite; /* Adjust the animation duration as needed */
+  animation: scrollAnimation 20s linear infinite; /* Adjust the animation duration as needed */
+}
+
+@keyframes scrollAnimation {
+  0% {
+    transform: translateX(0%);
   }
-  
-  @keyframes scrollAnimation {
-    0% {
-      transform: translateX(0%);
-    }
-    100% {
-      transform: translateX(-100%);
-    }
+  100% {
+    transform: translateX(-100%);
+  }
 }
