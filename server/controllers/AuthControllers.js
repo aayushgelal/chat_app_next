@@ -23,8 +23,9 @@ export const checkUser= async (req,rest,next) => {
 export const signup=async(req,res,next) =>{
     try{
         const{email,name,userId}=req.body;
+        console.log(email,name)
         if(!email||!name){
-            return res.send("Email, Name are required")
+            return res.sendStatus(400)
         }
         else{
              await prisma.user.create({data:{
@@ -33,7 +34,7 @@ export const signup=async(req,res,next) =>{
                 email:email
              }
             })
-            return res.send("Success!!")
+            return res.sendStatus(200)
 
         } 
 

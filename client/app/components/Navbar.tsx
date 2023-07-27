@@ -16,8 +16,6 @@ export default function Navbar() {
   useEffect(()=> {
     dataselector==null?setisloggedin(false):setisloggedin(true)
     console.log(dataselector)
-
-
   },[dataselector])
   return (
     <div id='navbar-main' className=' sticky  flex items-center justify-between shadow-sm p-4'>

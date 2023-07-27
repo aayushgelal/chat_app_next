@@ -1,10 +1,11 @@
 import express from 'express';
 import customRouter from './routes/AuthRoutes.js'
 import cors from 'cors'
+import dotenv from 'dotenv';
 
+dotenv.config()
 
 const app = express();
-const port = 5000;
 app.use(cors("*"));
 // Parse JSON bodies (Equivalent to previous body-parser.json())
 app.use(express.json());
@@ -15,6 +16,6 @@ app.use('/auth', customRouter);
 
 
 
-app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+app.listen(process.env.PORT, () => {
+  console.log(`⚡️[server]: Server is running at 4000`);
 });
