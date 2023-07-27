@@ -17,4 +17,9 @@ interface MusicGenreProps{
 
 
 }
-export type {NavItemProps,MusicGenreProps}
+interface State{
+    user:String |null,
+    token:String|null
+}
+
+export type {State,NavItemProps,MusicGenreProps}
