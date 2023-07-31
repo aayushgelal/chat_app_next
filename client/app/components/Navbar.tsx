@@ -7,14 +7,16 @@ import { url } from "inspector";
 import Image from "next/image";
 import { AiOutlineSearch, AiOutlineShoppingCart } from "react-icons/ai";
 import SearchBar from "./SearchBar";
-import { useSelector } from "react-redux";
-import { setCredentials } from "../reducers/authreducer";
+import { useDispatch, useSelector } from "react-redux";
+import { AuthSlice, logOut, setCredentials } from "../reducers/authreducer";
+import { UseSelector } from "react-redux/es/hooks/useSelector";
 
 export default function Navbar() {
-  const dataselector = useSelector((state: any) => state.auth.user);
+  const dataselector = useSelector((state: any) => state.auth.token);
+  const dispatch = useDispatch();
   const [isloggedin, setisloggedin] = useState(false);
   useEffect(() => {
-    dataselector == null ? setisloggedin(false) : setisloggedin(true);
+    dataselector ? setisloggedin(true) : setisloggedin(false);
     console.log(dataselector);
   }, [dataselector]);
   return (
@@ -30,7 +32,11 @@ export default function Navbar() {
       <div className="flex justify-between items-center space-x-6 ">
         <SearchBar />
         {isloggedin ? (
-          <NavItem name={"Logout"} link="/login" />
+          <NavItem
+            name={"Logout"}
+            link="/login"
+            onClick={() => dispatch(logOut({}))}
+          />
         ) : (
           <NavItem name={"Login"} link={"/login"} />
         )}

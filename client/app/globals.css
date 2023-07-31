@@ -5,3 +5,11 @@
 .heading3 {
   @apply text-lg font-bold mb-4 mt-8;
 }
+html,
+body,
+#__next {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}

@@ -8,6 +8,7 @@ import { AiFillGoogleCircle } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import {
   GoogleAuthProvider,
+  User,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -15,7 +16,7 @@ import {
 import { FirebaseAuth } from "../../utils/FirebaseConfig";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "@/app/reducers/authreducer";
-import axios from "axios";
+import axios, { Axios, AxiosResponse } from "axios";
 import { CHECK_USER_ROUTE } from "../../utils/ApiRoutes";
 import Link from "next/link";
 
@@ -25,25 +26,10 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [Password, setPassword] = useState("");
   const dispatch = useDispatch();
-  const handlelogin = async () => {
+  const loginwithgoogle = async () => {
     const provider = new GoogleAuthProvider();
     const { user } = await signInWithPopup(FirebaseAuth, provider);
-    try {
-      dispatch(
-        setCredentials({
-          email: user?.email,
-          accessToken: user?.getIdToken(),
-        })
-      );
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const validationEmail = (e: any) => {
-    var emailValue = e.target.value;
-
-    setEmail(emailValue);
+    await handlelogin(user);
   };
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -51,25 +37,82 @@ export default function LoginPage() {
     if (!email) {
       alert("Required Email :");
     } else {
-      try {
-        const { user } = await signInWithEmailAndPassword(
-          FirebaseAuth,
-          email,
-          Password
-        );
-        dispatch(
-          setCredentials({
-            email: user.email,
-            accessToken: user.getIdToken(),
-          })
-        );
+      const { user } = await signInWithEmailAndPassword(
+        FirebaseAuth,
+        email,
+        Password
+      );
 
-        router.push("/");
-      } catch (e) {
-        alert(e);
-      }
+      await handlelogin(user);
     }
   };
+  const handlelogin = async (user: User) => {
+    try {
+      if (user.email) {
+        const data: AxiosResponse = await axios.post(CHECK_USER_ROUTE, {
+          email: user.email,
+        });
+        console.log(data);
+        if (data.status == 200) {
+          dispatch(
+            setCredentials({
+              email: user.email,
+              accessToken: await user.getIdTokenResult(),
+              name: data.data.name,
+            })
+          );
+          router.push("/");
+        }
+      }
+    } catch (e) {
+      alert(e);
+    }
+  };
+  // const handlelogin = async () => {
+  //   const provider = new GoogleAuthProvider();
+  //   const { user } = await signInWithPopup(FirebaseAuth, provider);
+  //   try {
+  //     dispatch(
+  //       setCredentials({
+  //         email: user?.email,
+  //         accessToken: user?.getIdToken(),
+  //       })
+  //     );
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+
+  const validationEmail = (e: any) => {
+    var emailValue = e.target.value;
+
+    setEmail(emailValue);
+  };
+  // const handleSubmit = async (e: any) => {
+  //   e.preventDefault();
+
+  //   if (!email) {
+  //     alert("Required Email :");
+  //   } else {
+  //     try {
+  //       const { user } = await signInWithEmailAndPassword(
+  //         FirebaseAuth,
+  //         email,
+  //         Password
+  //       );
+  //       dispatch(
+  //         setCredentials({
+  //           email: user.email,
+  //           accessToken: user.getIdToken(),
+  //         })
+  //       );
+
+  //       router.push("/");
+  //     } catch (e) {
+  //       alert(e);
+  //     }
+  //   }
+  // };
 
   // Email Validation
 
@@ -120,7 +163,7 @@ export default function LoginPage() {
           {" "}
           <div
             className="bg-sky-600  text-center p-2 rounded-lg text-white flex items-center justify-center "
-            onClick={handlelogin}
+            onClick={loginwithgoogle}
           >
             <FcGoogle color="red" size={40} className="mr-5" /> Login With
             Google

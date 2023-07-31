@@ -18,23 +18,21 @@ export default function SearchBar() {
   });
 
   return (
-    <div className=" transition-transform flex items-center">
-      {searchbar ? (
-        <input
-          onChange={(e) => setsearchedterm(e.target.value.toLowerCase())}
-          placeholder="Search your music"
-          className=" focus:outline-none p-2  focus:border-b-2 focus:border-red-100  transition-color"
-        />
-      ) : null}
-      <button>
-        <AiOutlineSearch
-          size={30}
-          color="gray"
-          onClick={() => {
-            setsearchbar(!searchbar);
-          }}
-        />
-      </button>
+    <div className=" max-w-full flex items-center justify-between px-3 rounded-full outline outline-gray-200">
+      <input
+        onChange={(e) => setsearchedterm(e.target.value.toLowerCase())}
+        placeholder="Search your Chats"
+        className=" focus:outline-none p-2 "
+      />
+
+      <AiOutlineSearch
+        size={20}
+        color="gray"
+        onClick={() => {
+          setsearchbar(!searchbar);
+        }}
+        onClickCapture={() => {}}
+      />
     </div>
   );
 }
