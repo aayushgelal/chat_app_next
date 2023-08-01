@@ -11,6 +11,7 @@ export default function page() {
 
   const [isloggedin, setisloggedin] = useState(false);
   const token = useSelector((state: any) => state.auth.token);
+ 
   // useEffect(() => {
   //   token ? setisloggedin(true) : setisloggedin(false);
   // }, [token]);

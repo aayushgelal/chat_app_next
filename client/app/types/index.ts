@@ -17,6 +17,7 @@ interface State {
   user: String | null;
   token: String | null;
   name: String | null;
+  email: String | null;
 }
 
 export type { State, NavItemProps, MusicGenreProps };

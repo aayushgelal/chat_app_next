@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { MouseEventHandler, useState } from "react";
+import React, { MouseEventHandler, useEffect, useState } from "react";
 import {
   AiFillPlayCircle,
   AiFillPlusCircle,
@@ -7,6 +7,7 @@ import {
   AiOutlineSend,
 } from "react-icons/ai";
 import { FcConferenceCall, FcVideoCall } from "react-icons/fc";
+import { io } from "socket.io-client";
 
 export default function ChatScreen() {
   const [message, setMessage] = useState("");
@@ -14,13 +15,23 @@ export default function ChatScreen() {
     e.preventDefault();
     setMessage("");
   };
+  useEffect(() => {
+    socketInitializer();
+  }, []);
+
+  const socketInitializer = () => {
+    console.log("done");
+
+    let socket = io("localhost:4000");
+    socket.emit("message", "hi");
+  };
 
   return (
     <div className="flex-1 px-2 flex flex-col">
       <div className=" items-center justify-between px-2 border-b-2 h-100 flex font-semibold font-xl space-x-2">
         <div className="flex items-center">
           {" "}
-          <Image src="" alt="" width={50} height={50} />
+          <Image src="/vercel.svg" alt="" width={50} height={50} />
           Pratishit Raj Baral
         </div>
         <div>

@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react";
 import "./login.global.css";
 import NavItem from "../../components/NavItem";
 import { useRouter } from "next/navigation";
-import { io } from "socket.io-client";
-import { AiFillGoogleCircle } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import {
   GoogleAuthProvider,
@@ -18,7 +16,6 @@ import { useDispatch } from "react-redux";
 import { setCredentials } from "@/app/reducers/authreducer";
 import axios, { Axios, AxiosResponse } from "axios";
 import { CHECK_USER_ROUTE } from "../../utils/ApiRoutes";
-import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -154,9 +151,9 @@ export default function LoginPage() {
           <div className="underline cursor-pointer text-sky-600">
             Forgot Password?
           </div>
-          <div className=" underline cursor-pointer text-sky-600">
-            <Link href={"/signup"}>Sign Up</Link>
-          </div>
+          <button onClick={() => router.push("/signup")}>
+            <div className=" underline cursor-pointer text-sky-600">Signup</div>
+          </button>
         </div>
         <br></br>
         <button className="w-full">

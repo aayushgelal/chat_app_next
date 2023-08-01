@@ -1,19 +1,23 @@
 import express from "express";
-import customRouter from "./routes/AuthRoutes.js";
+import authRouter from "./routes/AuthRoutes.js";
+import messageRouter from "./routes/MessageRoutes.js";
+
 import cors from "cors";
 import dotenv from "dotenv";
 
+import { app, server } from "./routes/Socket.js";
+
 dotenv.config();
 
-const app = express();
-app.use(cors("*"));
+app.use(cors({ origin: "*" }));
 // Parse JSON bodies (Equivalent to previous body-parser.json())
 app.use(express.json());
 
 // Parse URL-encoded bodies (Equivalent to previous body-parser.urlencoded())
 app.use(express.urlencoded({ extended: true }));
-app.use("/auth", customRouter);
+app.use("/auth", authRouter);
+app.use("/chat", messageRouter);
 
-app.listen(process.env.PORT, () => {
+server.listen(process.env.PORT, () => {
   console.log(`⚡️[server]: Server is running at 4000`);
 });
