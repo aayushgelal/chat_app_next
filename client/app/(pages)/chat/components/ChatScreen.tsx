@@ -1,3 +1,4 @@
+import { RootState } from "@/app/store";
 import Image from "next/image";
 import React, { MouseEventHandler, useEffect, useState } from "react";
 import {
@@ -7,10 +8,12 @@ import {
   AiOutlineSend,
 } from "react-icons/ai";
 import { FcConferenceCall, FcVideoCall } from "react-icons/fc";
+import { useSelector } from "react-redux";
 import { io } from "socket.io-client";
 
 export default function ChatScreen() {
   const [message, setMessage] = useState("");
+  const currentuser = useSelector((state: RootState) => state.current_user);
   const sendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
@@ -30,9 +33,8 @@ export default function ChatScreen() {
     <div className="flex-1 px-2 flex flex-col">
       <div className=" items-center justify-between px-2 border-b-2 h-100 flex font-semibold font-xl space-x-2">
         <div className="flex items-center">
-          {" "}
           <Image src="/vercel.svg" alt="" width={50} height={50} />
-          Pratishit Raj Baral
+          {currentuser.name}
         </div>
         <div>
           <FcVideoCall />

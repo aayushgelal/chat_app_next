@@ -1,4 +1,5 @@
 import { MouseEventHandler } from "react";
+import { Interface } from "readline";
 
 interface NavItemProps {
   name?: String;
@@ -13,11 +14,20 @@ interface MusicGenreProps {
   link: String;
   color: string;
 }
-interface State {
+interface AuthState {
   user: String | null;
   token: String | null;
   name: String | null;
   email: String | null;
 }
+interface userState {
+  id: number;
+  name: String;
+  email: string;
+}
+interface UsersState {
+  map(arg0: (user: any) => import("react").JSX.Element): any;
+  letter: userState[];
+}
 
-export type { State, NavItemProps, MusicGenreProps };
+export type { AuthState, userState, UsersState, NavItemProps, MusicGenreProps };

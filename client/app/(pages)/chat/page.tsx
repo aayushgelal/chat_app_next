@@ -3,15 +3,25 @@
 import SideBar from "@/app/(pages)/chat/components/SideBar";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ChatScreen from "./components/ChatScreen";
+import { addUsers } from "@/app/reducers/usersreducer";
+import { GET_USER_ROUTE } from "@/app/utils/ApiRoutes";
+import axios from "axios";
 
 export default function page() {
+  const dispatch = useDispatch();
   const router = useRouter();
 
   const [isloggedin, setisloggedin] = useState(false);
-  const token = useSelector((state: any) => state.auth.token);
- 
+  const getUserData = async () => {
+    const { data: users } = await axios.get(GET_USER_ROUTE);
+    dispatch(addUsers(users));
+  };
+  useEffect(() => {
+    getUserData();
+  }, []);
+
   // useEffect(() => {
   //   token ? setisloggedin(true) : setisloggedin(false);
   // }, [token]);

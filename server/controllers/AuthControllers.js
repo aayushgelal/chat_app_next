@@ -55,7 +55,7 @@ export const getUsers = async (req, res, next) => {
       }
       usersGroupedByInitialLetter[initialLetter].push(usr);
     });
-    res.send(users);
+    res.send(usersGroupedByInitialLetter);
   } catch (e) {
     console.log(e);
   }
