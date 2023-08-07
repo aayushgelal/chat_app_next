@@ -44,7 +44,7 @@ export default function Navbar() {
   return (
     <div
       id="navbar-main"
-      className=" sticky  flex items-center justify-between shadow-sm p-4"
+      className=" sticky z-20 bg-white top-0 w-full flex items-center justify-between shadow-sm p-4"
     >
       <div className="flex items-center">
         <Image src="/vercel.svg" width={150} height={150} alt="" />
@@ -52,7 +52,6 @@ export default function Navbar() {
       </div>
 
       <div className="flex justify-between items-center space-x-6 ">
-        <SearchBar />
         {isloggedin ? (
           <div className="flex items-center space-x-3">
             <BsPersonCircle
@@ -73,9 +72,6 @@ export default function Navbar() {
             </button>
           </div>
         ) : null}
-        <button>
-          <AiOutlineShoppingCart size={30} color="gray" />
-        </button>
       </div>
     </div>
   );

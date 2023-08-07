@@ -22,10 +22,10 @@ model User{
 }
 model Messages{
   id Int @id @default(autoincrement())
-  sender User @relation("sentMessages",fields:[senderId],references: [id])
-  senderId Int
-  receiver User @relation("receivedMessages",fields: [receiverId],references: [id])
-  receiverId Int
+  sender User @relation("sentMessages",fields:[senderEmail],references: [email])
+  senderEmail String
+  receiver User @relation("receivedMessages",fields: [receiverEmail],references: [email])
+  receiverEmail String
   messageText     String?
   messageStatus String @default("sent")
   createdAt DateTime @default(now())
