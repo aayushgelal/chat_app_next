@@ -12,7 +12,7 @@ const io = new Server(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
-    transports: ["websocket", "polling"],
+    transports: ["websocket"],
     credentials: true,
   },
   allowEIO3: true,
@@ -22,7 +22,7 @@ io.on("connection", (socket) => {
     socket.join(useremail);
   });
 
-  socket.on("message", async (data, from, to) => {
+  socket.on("add-message", async (data, from, to) => {
     try {
       const newMessage = {
         message: data,
@@ -30,7 +30,7 @@ io.on("connection", (socket) => {
         to: to,
         timestamp: new Date(),
       };
-      socket.emit("message", newMessage);
+      io.to(to).to(from).emit("receive-message", newMessage);
 
       await prisma.messages.create({
         data: {

@@ -3,7 +3,7 @@ import { MessageType } from "@/app/types";
 import { GET_MESSAGE_ROUTE } from "@/app/utils/ApiRoutes";
 import axios from "axios";
 import Image from "next/image";
-import React, { MouseEventHandler, useEffect, useState } from "react";
+import React, { MouseEventHandler, useEffect, useRef, useState } from "react";
 import {
   AiFillPlayCircle,
   AiFillPlusCircle,
@@ -23,17 +23,53 @@ export default function ChatScreen() {
 
   const currentuser = useSelector((state: RootState) => state.current_user);
   const fromuser = useSelector((state: RootState) => state.auth);
+  const socket = useRef(io("localhost:4000"));
+  socket.current.emit("join", fromuser.email);
 
-  let socket = io("localhost:4000");
-  socket.emit("join", currentuser);
+  useEffect(() => {
+    const handleIncomingMessage = (nm: any) => {
+      const newMessage: MessageType = {
+        message: nm.message,
+        from: nm.from,
+        to: nm.to,
+      };
+      setMessageList((prevMessages) => [...prevMessages, newMessage]);
+    };
+
+    socket.current.on("receive-message", handleIncomingMessage);
+  }, [socket.current]);
+  useEffect(() => {
+    get_prev_message();
+  }, [currentuser]);
+
+  // useEffect(() => {
+  //   socket.on("message", (nm) => {
+  //     const newMessage: MessageType = {
+  //       message: nm.message,
+  //       from: nm.from,
+  //       to: nm.to,
+  //     };
+  //     console.log(newMessage);
+  //     setMessageList((prevMessages) => [...prevMessages, newMessage]);
+  //   });
+  //   return () => {
+  //     // Clean-up logic here
+  //     socket.off("message");
+  //   };
+  // }, [socket]);
 
   const sendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    socket.emit("message", message, fromuser.email, currentuser.email);
+    socket.current.emit(
+      "add-message",
+      message,
+      fromuser.email,
+      currentuser.email
+    );
     setMessage("");
   };
+
   const get_prev_message = async () => {
-    console.log(currentuser, fromuser);
     if (currentuser.email) {
       const { messages } = await axios
         .get(GET_MESSAGE_ROUTE, {
@@ -55,22 +91,9 @@ export default function ChatScreen() {
       }
     }
   };
-  useEffect(() => {
-    get_prev_message();
-  }, [currentuser]);
-  useEffect(() => {
-    socket.on("message", (nm) => {
-      const newMessage: MessageType = {
-        message: nm.message,
-        from: nm.from,
-        to: nm.to,
-      };
-      console.log(newMessage);
-      setMessageList((prevMessages) => [...prevMessages, newMessage]);
-    });
-  }, [socket]);
+
   return currentuser.email ? (
-    <div className="flex-1 bg-red-50 px-2 flex flex-col">
+    <div className="  w-full bg-red-50 px-2 flex flex-col">
       <div className=" items-center justify-between px-2 border-b-2 h-100 flex font-semibold font-xl space-x-2">
         <div className="flex items-center">
           <Image src="/vercel.svg" alt="" width={50} height={50} />
@@ -80,33 +103,33 @@ export default function ChatScreen() {
           <FcVideoCall />
         </div>
       </div>
-      <div className=" flex flex-col overflow-hidden ">
-        <div className="overflow-auto">
-          {messageList &&
-            messageList.map((m, index) =>
-              m.from === fromuser.email ? (
-                <SentMessageBox message={m.message} key={index} />
-              ) : (
-                <ReceivedMessageBox message={m.message} key={index} />
-              )
-            )}
-        </div>
+      <div className="   overflow-scroll ">
+        {messageList &&
+          messageList.map((m, index) =>
+            m.from === fromuser.email ? (
+              <SentMessageBox message={m.message} key={index} />
+            ) : (
+              <ReceivedMessageBox message={m.message} key={index} />
+            )
+          )}
       </div>
       <form onSubmit={(e) => sendMessage(e)}>
-        <div className=" bg-white w-full flex-1  z-10 flex fixed   bottom-0 items-center space-x-1 p-2">
-          <AiFillPlusCircle size={30} />
+        <div className="w-full bg-white h-fit p-4">
+          <div className="fixed bottom-0 w-full left-0  z-10 flex items-center space-x-1 p-2">
+            <AiFillPlusCircle size={30} />
 
-          <textarea
-            onKeyDown={(e) => (e.key == "Enter" ? sendMessage(e) : null)}
-            placeholder="Aa"
-            title="Message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className=" py-1 resize-none text-left px-3 text-sm flex-1 h-8 rounded-full outline outline-gray-200"
-          ></textarea>
-          <button type="submit">
-            <AiOutlineSend color="red" size={30} className="cursor-pointer" />
-          </button>
+            <textarea
+              onKeyDown={(e) => (e.key == "Enter" ? sendMessage(e) : null)}
+              placeholder="Aa"
+              title="Message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className=" py-1 resize-none text-left px-3 text-sm flex-1 h-8 rounded-full outline outline-gray-200"
+            ></textarea>
+            <button type="submit">
+              <AiOutlineSend color="red" size={30} className="cursor-pointer" />
+            </button>
+          </div>
         </div>
       </form>
     </div>
