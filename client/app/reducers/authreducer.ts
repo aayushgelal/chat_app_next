@@ -1,10 +1,10 @@
 import { Action, createSlice } from "@reduxjs/toolkit";
 import { AuthState } from "../types";
 const initialState: AuthState = {
-  user: null,
-  token: null,
-  name: null,
-  email: null,
+  user: "abcd",
+  token: "abcd",
+  name: "Aayush Gelal",
+  email: "aayushgelal4@gmail.com",
 };
 
 export const AuthSlice = createSlice({

@@ -16,6 +16,7 @@ import { io } from "socket.io-client";
 import MessageBox from "./SentMessageBox";
 import SentMessageBox from "./SentMessageBox";
 import ReceivedMessageBox from "./ReceivedMessageBox";
+import EmojiPicker from "emoji-picker-react";
 
 export default function ChatScreen() {
   const [message, setMessage] = useState("");
@@ -23,6 +24,7 @@ export default function ChatScreen() {
 
   const currentuser = useSelector((state: RootState) => state.current_user);
   const fromuser = useSelector((state: RootState) => state.auth);
+  const [emojipicker, setemojipicker] = useState(false);
   const socket = useRef(io("localhost:4000"));
   socket.current.emit("join", fromuser.email);
 
@@ -32,6 +34,7 @@ export default function ChatScreen() {
         message: nm.message,
         from: nm.from,
         to: nm.to,
+        timestamp: nm.timestamp,
       };
       setMessageList((prevMessages) => [...prevMessages, newMessage]);
     };
@@ -85,6 +88,7 @@ export default function ChatScreen() {
             message: messageItem.messageText,
             from: messageItem.senderEmail,
             to: messageItem.receiverEmail,
+            timestamp: messageItem.createdAt,
           })
         );
         setMessageList(destructuredmessages);
@@ -103,20 +107,39 @@ export default function ChatScreen() {
           <FcVideoCall />
         </div>
       </div>
-      <div className="   overflow-scroll ">
+      <div className="  h-sc  overflow-scroll ">
         {messageList &&
           messageList.map((m, index) =>
             m.from === fromuser.email ? (
-              <SentMessageBox message={m.message} key={index} />
+              <SentMessageBox
+                message={m.message}
+                timestamp={m.timestamp}
+                key={index}
+              />
             ) : (
-              <ReceivedMessageBox message={m.message} key={index} />
+              <ReceivedMessageBox
+                message={m.message}
+                timestamp={m.timestamp}
+                key={index}
+              />
             )
           )}
       </div>
+
       <form onSubmit={(e) => sendMessage(e)}>
-        <div className="w-full bg-white h-fit p-4">
-          <div className="fixed bottom-0 w-full left-0  z-10 flex items-center space-x-1 p-2">
-            <AiFillPlusCircle size={30} />
+        <div className="w-full  h-fit p-4">
+          {emojipicker && (
+            <EmojiPicker
+              onEmojiClick={(e, data) => {
+                setMessage((prevmessage) => prevmessage + data.emoji);
+              }}
+            />
+          )}
+          <div className=" w-full left-0  z-10 flex items-center space-x-1 p-2">
+            <AiFillPlusCircle
+              size={30}
+              onClick={() => setemojipicker(!emojipicker)}
+            />
 
             <textarea
               onKeyDown={(e) => (e.key == "Enter" ? sendMessage(e) : null)}

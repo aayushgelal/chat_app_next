@@ -28,7 +28,7 @@ io.on("connection", (socket) => {
         message: data,
         from: from,
         to: to,
-        timestamp: new Date(),
+        timestamp: Date.now(),
       };
       io.to(to).to(from).emit("receive-message", newMessage);
 

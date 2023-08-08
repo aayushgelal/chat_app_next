@@ -34,6 +34,8 @@ interface MessageType {
   message: string;
   from: string;
   to: string;
+  delivered?: string;
+  timestamp?: Date;
 }
 
 export type {
