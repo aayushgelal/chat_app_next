@@ -17,6 +17,8 @@ import MessageBox from "./SentMessageBox";
 import SentMessageBox from "./SentMessageBox";
 import ReceivedMessageBox from "./ReceivedMessageBox";
 import EmojiPicker from "emoji-picker-react";
+import { BsEmojiLaughing } from "react-icons/bs";
+import AddFile from "./AddFile";
 
 export default function ChatScreen() {
   const [message, setMessage] = useState("");
@@ -127,30 +129,36 @@ export default function ChatScreen() {
       </div>
 
       <form onSubmit={(e) => sendMessage(e)}>
-        <div className="w-full  h-fit p-4">
-          {emojipicker && (
-            <EmojiPicker
-              onEmojiClick={(e, data) => {
-                setMessage((prevmessage) => prevmessage + data.emoji);
-              }}
-            />
-          )}
-          <div className=" w-full left-0  z-10 flex items-center space-x-1 p-2">
-            <AiFillPlusCircle
-              size={30}
-              onClick={() => setemojipicker(!emojipicker)}
-            />
+        <div className="  w-9/12  right-auto fixed bottom-0  h-fit p-4">
+          <div className=" relative  flex items-center space-x-5 p-2">
+            <AddFile />
+            <div className="flex items-center bg-white space-x-1 flex-1 py-1 px-3 h-7 text-left  text-sm  w-fit rounded-full outline outline-gray-200">
+              <textarea
+                onKeyDown={(e) => (e.key == "Enter" ? sendMessage(e) : null)}
+                placeholder="Aa"
+                title="Message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className="outline-none w-full h-full resize-none "
+              ></textarea>
+              <div className="absolute right-0 bottom-full">
+                {emojipicker && (
+                  <EmojiPicker
+                    onEmojiClick={(e, data) => {
+                      setMessage((prevmessage) => prevmessage + data.emoji);
+                    }}
+                  />
+                )}
+              </div>
+              <BsEmojiLaughing
+                color="gray"
+                size={20}
+                onClick={() => setemojipicker(!emojipicker)}
+              />
+            </div>
 
-            <textarea
-              onKeyDown={(e) => (e.key == "Enter" ? sendMessage(e) : null)}
-              placeholder="Aa"
-              title="Message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              className=" py-1 resize-none text-left px-3 text-sm flex-1 h-8 rounded-full outline outline-gray-200"
-            ></textarea>
             <button type="submit">
-              <AiOutlineSend color="red" size={30} className="cursor-pointer" />
+              <AiOutlineSend color="red" size={20} className="cursor-pointer" />
             </button>
           </div>
         </div>
