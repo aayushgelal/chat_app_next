@@ -2,6 +2,9 @@ import { configureStore, createSlice } from "@reduxjs/toolkit";
 import { AuthSlice } from "../reducers/authreducer";
 import { UserSlice } from "../reducers/usersreducer";
 import { CurrentUser } from "../reducers/currentusereducer";
+import { imagereducer } from "../reducers/imagereducer";
+import { composeWithDevTools } from 'redux-devtools-extension';
+
 // ...
 
 export const store = configureStore({
@@ -9,11 +12,14 @@ export const store = configureStore({
     auth: AuthSlice.reducer,
     users: UserSlice.reducer,
     current_user: CurrentUser.reducer,
+    selected_image: imagereducer.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
     }),
+    
+
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

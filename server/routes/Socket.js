@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 export const app = express();
 export const server = http.createServer(app);
 
-const io = new Server(server, {
+export const io = new Server(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
@@ -21,6 +21,7 @@ io.on("connection", (socket) => {
   socket.on("join", (useremail) => {
     socket.join(useremail);
   });
+ 
 
   socket.on("add-message", async (data, from, to) => {
     try {

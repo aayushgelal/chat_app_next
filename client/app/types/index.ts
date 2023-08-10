@@ -15,14 +15,14 @@ interface MusicGenreProps {
   color: string;
 }
 interface AuthState {
-  user: String | null;
-  token: String | null;
-  name: String | null;
-  email: String | null;
+  user: string | null;
+  token: string | null;
+  name: string | null;
+  email: string | null;
 }
 interface userState {
   id: number;
-  name: String;
+  name: string;
   email: string;
 }
 interface UsersState {
@@ -36,6 +36,7 @@ interface MessageType {
   to: string;
   delivered?: string;
   timestamp?: Date;
+  imageurl?: string;
 }
 
 export type {

@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 interface CurrentUser_Type {
   id: number | null;
-  name: String | null;
-  email: String | null;
+  name: string | null;
+  email: string | null;
 }
 const initialState: CurrentUser_Type = {
   id: null,

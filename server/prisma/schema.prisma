@@ -20,6 +20,14 @@ model User{
   revieved_Messages Messages[] @relation("receivedMessages")
 
 }
+model File{
+  id Int @id @default(autoincrement())
+  filename String
+  createdAt DateTime @default(now())
+  messageId Int @unique
+  messages Messages @relation("file",fields: [messageId],references: [id])
+
+}
 model Messages{
   id Int @id @default(autoincrement())
   sender User @relation("sentMessages",fields:[senderEmail],references: [email])
@@ -29,6 +37,7 @@ model Messages{
   messageText     String?
   messageStatus String @default("sent")
   createdAt DateTime @default(now())
+  file File? @relation("file")
 
 
 }

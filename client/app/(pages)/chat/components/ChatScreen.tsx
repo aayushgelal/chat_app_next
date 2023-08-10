@@ -1,6 +1,6 @@
 import { RootState } from "@/app/store";
 import { MessageType } from "@/app/types";
-import { GET_MESSAGE_ROUTE } from "@/app/utils/ApiRoutes";
+import { ADD_IMAGE_ROUTE, GET_MESSAGE_ROUTE } from "@/app/utils/ApiRoutes";
 import axios from "axios";
 import Image from "next/image";
 import React, { MouseEventHandler, useEffect, useRef, useState } from "react";
@@ -11,7 +11,7 @@ import {
   AiOutlineSend,
 } from "react-icons/ai";
 import { FcConferenceCall, FcVideoCall } from "react-icons/fc";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
 import MessageBox from "./SentMessageBox";
 import SentMessageBox from "./SentMessageBox";
@@ -19,13 +19,16 @@ import ReceivedMessageBox from "./ReceivedMessageBox";
 import EmojiPicker from "emoji-picker-react";
 import { BsEmojiLaughing } from "react-icons/bs";
 import AddFile from "./AddFile";
+import { removeImage } from "@/app/reducers/imagereducer";
 
 export default function ChatScreen() {
   const [message, setMessage] = useState("");
   const [messageList, setMessageList] = useState<MessageType[]>([]);
+  const dispatch = useDispatch();
 
   const currentuser = useSelector((state: RootState) => state.current_user);
   const fromuser = useSelector((state: RootState) => state.auth);
+  const selectedimage = useSelector((state: RootState) => state.selected_image);
   const [emojipicker, setemojipicker] = useState(false);
   const socket = useRef(io("localhost:4000"));
   socket.current.emit("join", fromuser.email);
@@ -37,11 +40,13 @@ export default function ChatScreen() {
         from: nm.from,
         to: nm.to,
         timestamp: nm.timestamp,
+        imageurl: "localhost:4000/" + nm.imageurl,
       };
       setMessageList((prevMessages) => [...prevMessages, newMessage]);
     };
 
     socket.current.on("receive-message", handleIncomingMessage);
+    socket.current.on("received-image", handleIncomingMessage);
   }, [socket.current]);
   useEffect(() => {
     get_prev_message();
@@ -63,15 +68,29 @@ export default function ChatScreen() {
   //   };
   // }, [socket]);
 
-  const sendMessage = (e: React.FormEvent) => {
+  const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    socket.current.emit(
-      "add-message",
-      message,
-      fromuser.email,
-      currentuser.email
-    );
-    setMessage("");
+    if ((message && selectedimage.image) || selectedimage.image) {
+      const formData = new FormData();
+      formData.append("image", selectedimage.image);
+      formData.append("message", message);
+      fromuser.email && formData.append("from", fromuser.email);
+      currentuser.email && formData.append("to", currentuser.email);
+
+      console.log(formData);
+
+      await axios.post(ADD_IMAGE_ROUTE, formData);
+
+      setMessage("");
+      dispatch(removeImage({}));
+    } else if (message) {
+      socket.current.emit(
+        "add-message",
+        message,
+        fromuser.email,
+        currentuser.email
+      );
+    }
   };
 
   const get_prev_message = async () => {
@@ -133,6 +152,15 @@ export default function ChatScreen() {
           <div className=" relative  flex items-center space-x-5 p-2">
             <AddFile />
             <div className="flex items-center bg-white space-x-1 flex-1 py-1 px-3 h-7 text-left  text-sm  w-fit rounded-full outline outline-gray-200">
+              {selectedimage.imageUrl && (
+                <Image
+                  className="absolute bottom-full"
+                  src={selectedimage.imageUrl}
+                  alt=""
+                  height={60}
+                  width={60}
+                />
+              )}
               <textarea
                 onKeyDown={(e) => (e.key == "Enter" ? sendMessage(e) : null)}
                 placeholder="Aa"

@@ -1,8 +1,8 @@
 import { Action, createSlice } from "@reduxjs/toolkit";
 import { AuthState } from "../types";
 const initialState: AuthState = {
-  user: "abcd",
-  token: "abcd",
+  user: "1",
+  token: "ASDASDSADAS",
   name: "Aayush Gelal",
   email: "aayushgelal4@gmail.com",
 };

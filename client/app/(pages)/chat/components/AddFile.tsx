@@ -1,17 +1,29 @@
-import React, { LegacyRef, useRef } from "react";
+import { addImage } from "@/app/reducers/imagereducer";
+import React, {
+  FormEvent,
+  LegacyRef,
+  ReactEventHandler,
+  useRef,
+  useState,
+} from "react";
 import { AiFillPlusCircle } from "react-icons/ai";
 import { BsFileArrowUp } from "react-icons/bs";
+import { useDispatch } from "react-redux";
 
 export default function AddFile() {
+  const dispatch = useDispatch();
+  const [selectedimage, setselectedimage] = useState<String | null>(null);
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const imageFile = event.target.files && event.target.files[0];
     if (imageFile) {
       const imageUrl = URL.createObjectURL(imageFile);
-      console.log(imageFile, imageUrl);
+      dispatch(addImage({ imageUrl: imageUrl, image: imageFile }));
     }
   };
   const inputref = useRef<HTMLInputElement | null>(null);
-  const handleButtonClick = () => {
+  const handleButtonClick = (event: FormEvent) => {
+    event.preventDefault(); // Prevent the form from submitting
+
     inputref.current?.click();
   };
   return (
