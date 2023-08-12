@@ -1,6 +1,10 @@
 import { RootState } from "@/app/store";
 import { MessageType } from "@/app/types";
-import { ADD_IMAGE_ROUTE, GET_MESSAGE_ROUTE } from "@/app/utils/ApiRoutes";
+import {
+  ADD_IMAGE_ROUTE,
+  GET_MESSAGE_ROUTE,
+  Host,
+} from "@/app/utils/ApiRoutes";
 import axios from "axios";
 import Image from "next/image";
 import React, { MouseEventHandler, useEffect, useRef, useState } from "react";
@@ -34,14 +38,15 @@ export default function ChatScreen() {
   socket.current.emit("join", fromuser.email);
 
   useEffect(() => {
-    const handleIncomingMessage = (nm: any) => {
+    const handleIncomingMessage = (messageItem: any) => {
       const newMessage: MessageType = {
-        message: nm.message,
-        from: nm.from,
-        to: nm.to,
-        timestamp: nm.timestamp,
-        imageurl: "localhost:4000/" + nm.imageurl,
+        message: messageItem.message,
+        from: messageItem.from,
+        to: messageItem.to,
+        timestamp: messageItem.timestamp,
+        imageurl: `${Host}${messageItem.imageurl}`,
       };
+      console.log(newMessage.imageurl);
       setMessageList((prevMessages) => [...prevMessages, newMessage]);
     };
 
@@ -77,9 +82,7 @@ export default function ChatScreen() {
       fromuser.email && formData.append("from", fromuser.email);
       currentuser.email && formData.append("to", currentuser.email);
 
-      console.log(formData);
-
-      await axios.post(ADD_IMAGE_ROUTE, formData);
+      axios.post(ADD_IMAGE_ROUTE, formData);
 
       setMessage("");
       dispatch(removeImage({}));
@@ -98,18 +101,20 @@ export default function ChatScreen() {
       const { messages } = await axios
         .get(GET_MESSAGE_ROUTE, {
           params: {
-            from: fromuser.email ? fromuser.email : "aayushgelal4@gmail.com",
+            from: fromuser?.email,
             to: currentuser?.email,
           },
         })
         .then((response) => response.data);
       if (messages != null) {
+        console.log(messages);
         const destructuredmessages: MessageType[] = messages?.map(
           (messageItem: any) => ({
             message: messageItem.messageText,
             from: messageItem.senderEmail,
             to: messageItem.receiverEmail,
             timestamp: messageItem.createdAt,
+            imageurl: `${Host}${messageItem.file}`,
           })
         );
         setMessageList(destructuredmessages);
@@ -136,12 +141,14 @@ export default function ChatScreen() {
                 message={m.message}
                 timestamp={m.timestamp}
                 key={index}
+                image={m.imageurl}
               />
             ) : (
               <ReceivedMessageBox
                 message={m.message}
                 timestamp={m.timestamp}
                 key={index}
+                image={m.imageurl}
               />
             )
           )}
