@@ -17,7 +17,6 @@ import {
 import { FcConferenceCall, FcVideoCall } from "react-icons/fc";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
-import MessageBox from "./SentMessageBox";
 import SentMessageBox from "./SentMessageBox";
 import ReceivedMessageBox from "./ReceivedMessageBox";
 import EmojiPicker from "emoji-picker-react";
@@ -38,6 +37,11 @@ export default function ChatScreen() {
   socket.current.emit("join", fromuser.email);
 
   useEffect(() => {
+    // Check if we're in the browser environment before using the document object
+    if (typeof document !== "undefined") {
+      // Your code that uses the document object here
+    }
+
     const handleIncomingMessage = (messageItem: any) => {
       const newMessage: MessageType = {
         message: messageItem.message,
@@ -52,27 +56,7 @@ export default function ChatScreen() {
 
     socket.current.on("receive-message", handleIncomingMessage);
     socket.current.on("received-image", handleIncomingMessage);
-  }, [socket.current]);
-  useEffect(() => {
-    get_prev_message();
-  }, [currentuser]);
-
-  // useEffect(() => {
-  //   socket.on("message", (nm) => {
-  //     const newMessage: MessageType = {
-  //       message: nm.message,
-  //       from: nm.from,
-  //       to: nm.to,
-  //     };
-  //     console.log(newMessage);
-  //     setMessageList((prevMessages) => [...prevMessages, newMessage]);
-  //   });
-  //   return () => {
-  //     // Clean-up logic here
-  //     socket.off("message");
-  //   };
-  // }, [socket]);
-
+  }, []);
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if ((message && selectedimage.image) || selectedimage.image) {
@@ -96,37 +80,66 @@ export default function ChatScreen() {
     }
   };
 
-  const get_prev_message = async () => {
-    if (currentuser.email) {
-      const { messages } = await axios
-        .get(GET_MESSAGE_ROUTE, {
-          params: {
-            from: fromuser?.email,
-            to: currentuser?.email,
-          },
-        })
-        .then((response) => response.data);
-      if (messages != null) {
-        console.log(messages);
-        const destructuredmessages: MessageType[] = messages?.map(
-          (messageItem: any) => ({
-            message: messageItem.messageText,
-            from: messageItem.senderEmail,
-            to: messageItem.receiverEmail,
-            timestamp: messageItem.createdAt,
-            imageurl: `${Host}${messageItem.file}`,
+  useEffect(() => {
+    const get_prev_message = async () => {
+      if (currentuser.email) {
+        const { messages } = await axios
+          .get(GET_MESSAGE_ROUTE, {
+            params: {
+              from: fromuser?.email,
+              to: currentuser?.email,
+            },
           })
-        );
-        setMessageList(destructuredmessages);
+          .then((response) => response.data);
+        if (messages != null) {
+          console.log(messages);
+          const destructuredmessages: MessageType[] = messages?.map(
+            (messageItem: any) => ({
+              message: messageItem.messageText,
+              from: messageItem.senderEmail,
+              to: messageItem.receiverEmail,
+              timestamp: messageItem.createdAt,
+              imageurl: `${Host}${messageItem.file}`,
+            })
+          );
+          setMessageList(destructuredmessages);
+        }
       }
-    }
-  };
+    };
+    get_prev_message();
+  }, [currentuser]);
+
+  // useEffect(() => {
+  //   socket.on("message", (nm) => {
+  //     const newMessage: MessageType = {
+  //       message: nm.message,
+  //       from: nm.from,
+  //       to: nm.to,
+  //     };
+  //     console.log(newMessage);
+  //     setMessageList((prevMessages) => [...prevMessages, newMessage]);
+  //   });
+  //   return () => {
+  //     // Clean-up logic here
+  //     socket.off("message");
+  //   };
+  // }, [socket]);
 
   return currentuser.email ? (
-    <div className="  w-full bg-red-50 px-2 flex flex-col">
-      <div className=" items-center justify-between px-2 border-b-2 h-100 flex font-semibold font-xl space-x-2">
-        <div className="flex items-center">
-          <Image src="/vercel.svg" alt="" width={50} height={50} />
+    <div className="  w-full px-2 flex flex-col">
+      <div className=" items-center justify-between py-4 px-2 border-b-2 h-100 flex font-semibold font-xl space-x-2">
+        <div className="flex  items-center">
+          <img
+            alt=""
+            style={{
+              borderRadius: "50%",
+              height: 60,
+              width: 60,
+              marginRight: 10,
+              objectFit: "cover",
+            }}
+            src="/DEAD.png"
+          />
           {currentuser.name}
         </div>
         <div>
