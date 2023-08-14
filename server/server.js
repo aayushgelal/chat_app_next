@@ -28,7 +28,9 @@ app.use(
   "/uploads/images",
   express.static(path.join(__dirname + "/uploads/images"))
 );
-
+app.use("/", (req, res) => {
+  res.send("Server is runing");
+});
 server.listen(process.env.PORT, () => {
   console.log(`⚡️[server]: Server is running at 4000`);
 });
