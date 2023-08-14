@@ -2,10 +2,7 @@
 import React, { useState, useEffect } from "react";
 import "./login.global.css";
 import NavItem from "../../components/NavItem";
-import validator from "validator";
 import { useRouter } from "next/navigation";
-import { io } from "socket.io-client";
-import { AiFillGoogleCircle } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import {
   GoogleAuthProvider,
@@ -18,7 +15,7 @@ import { FirebaseAuth } from "../../utils/FirebaseConfig";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "@/app/reducers/authreducer";
 import axios from "axios";
-import { CHECK_USER_ROUTE, SIGNUP_USER_ROUTE } from "@/app/utils/ApiRoutes";
+import { SIGNUP_USER_ROUTE } from "@/app/utils/ApiRoutes";
 import Link from "next/link";
 
 export default function SignupPage() {

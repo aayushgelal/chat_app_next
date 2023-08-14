@@ -14,9 +14,8 @@ import {
 import { FirebaseAuth } from "../../utils/FirebaseConfig";
 import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "@/app/reducers/authreducer";
-import axios, { Axios, AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 import { CHECK_USER_ROUTE } from "../../utils/ApiRoutes";
-import { UsersState } from "@/app/types";
 
 export default function LoginPage() {
   const router = useRouter();
