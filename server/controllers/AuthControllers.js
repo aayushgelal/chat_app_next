@@ -47,15 +47,8 @@ export const getUsers = async (req, res, next) => {
         email: true,
       },
     });
-    const usersGroupedByInitialLetter = {};
-    users.forEach((usr) => {
-      const initialLetter = usr.name.charAt(0).toUpperCase();
-      if (!usersGroupedByInitialLetter[initialLetter]) {
-        usersGroupedByInitialLetter[initialLetter] = [];
-      }
-      usersGroupedByInitialLetter[initialLetter].push(usr);
-    });
-    res.send(usersGroupedByInitialLetter);
+
+    res.send(users);
   } catch (e) {
     console.log(e);
   }
