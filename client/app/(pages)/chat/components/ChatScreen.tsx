@@ -19,11 +19,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
 import SentMessageBox from "./SentMessageBox";
 import ReceivedMessageBox from "./ReceivedMessageBox";
-import EmojiPicker from "emoji-picker-react";
 import { BsEmojiLaughing } from "react-icons/bs";
 import AddFile from "./AddFile";
 import { removeImage } from "@/app/reducers/imagereducer";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+
+const EmojiPicker = dynamic(() => import("emoji-picker-react"), {
+  ssr: false, // Disable server-side rendering for this component
+});
 
 export default function ChatScreen() {
   const [message, setMessage] = useState("");

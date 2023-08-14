@@ -1,6 +1,0 @@
-::-webkit-scrollbar {
-  width: 0; /* Remove scrollbar space */
-  background: transparent;
-  scroll-behavior: smooth;
-  /* Optional: just make scrollbar invisible */
-}
