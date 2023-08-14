@@ -25,10 +25,7 @@ interface userState {
   name: string;
   email: string;
 }
-interface UsersState {
-  map(arg0: (user: any) => import("react").JSX.Element): any;
-  letter: userState[];
-}
+
 interface MessageType {
   // Define the properties of a message, e.g., text, sender, timestamp
   message: string;
@@ -43,7 +40,6 @@ export type {
   MessageType,
   AuthState,
   userState,
-  UsersState,
   NavItemProps,
   MusicGenreProps,
 };

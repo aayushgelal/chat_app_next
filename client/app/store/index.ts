@@ -3,7 +3,8 @@ import { AuthSlice } from "../reducers/authreducer";
 import { UserSlice } from "../reducers/usersreducer";
 import { CurrentUser } from "../reducers/currentusereducer";
 import { imagereducer } from "../reducers/imagereducer";
-import { composeWithDevTools } from 'redux-devtools-extension';
+import { composeWithDevTools } from "redux-devtools-extension";
+import { socketreducer } from "../reducers/socketreducer";
 
 // ...
 
@@ -13,13 +14,12 @@ export const store = configureStore({
     users: UserSlice.reducer,
     current_user: CurrentUser.reducer,
     selected_image: imagereducer.reducer,
+    socket: socketreducer.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
     }),
-    
-
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

@@ -23,11 +23,13 @@ import EmojiPicker from "emoji-picker-react";
 import { BsEmojiLaughing } from "react-icons/bs";
 import AddFile from "./AddFile";
 import { removeImage } from "@/app/reducers/imagereducer";
+import { useRouter } from "next/navigation";
 
 export default function ChatScreen() {
   const [message, setMessage] = useState("");
   const [messageList, setMessageList] = useState<MessageType[]>([]);
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const currentuser = useSelector((state: RootState) => state.current_user);
   const fromuser = useSelector((state: RootState) => state.auth);
@@ -37,11 +39,6 @@ export default function ChatScreen() {
   socket.current.emit("join", fromuser.email);
 
   useEffect(() => {
-    // Check if we're in the browser environment before using the document object
-    if (typeof document !== "undefined") {
-      // Your code that uses the document object here
-    }
-
     const handleIncomingMessage = (messageItem: any) => {
       const newMessage: MessageType = {
         message: messageItem.message,
@@ -143,7 +140,11 @@ export default function ChatScreen() {
           {currentuser.name}
         </div>
         <div>
-          <FcVideoCall />
+          <FcVideoCall
+            onClick={() => {
+              router.push(`/call/${fromuser.email}`);
+            }}
+          />
         </div>
       </div>
       <div className="  h-sc  overflow-scroll ">

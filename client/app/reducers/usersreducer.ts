@@ -1,18 +1,31 @@
 import { Action, createSlice } from "@reduxjs/toolkit";
-import { UsersState } from "../types";
+import { userState } from "../types";
 
-const initialState: UsersState[] = [];
+interface initialState {
+  users: userState[];
+  filtereduser: userState[];
+}
+
+const initialState: initialState = {
+  users: [],
+  filtereduser: [],
+};
 export const UserSlice = createSlice({
   name: "users",
   initialState,
   reducers: {
-    addUsers: (state: UsersState[], action) => {
-      const Users: UsersState[] = action.payload;
-      return Users;
+    addUsers: (state: initialState, action) => {
+      const Users: userState[] = action.payload;
+      return { users: Users, filtereduser: Users };
     },
-    removeUsers: (state: UsersState[], action) => {
-      return [];
+    removeUsers: (state: initialState, action) => {
+      return { users: [], filtereduser: [] };
+    },
+    filteredUsers: (state: initialState, action) => {
+      const Users: userState[] = action.payload;
+      return { ...state, filtereduser: Users };
     },
   },
 });
-export const { addUsers, removeUsers } = UserSlice.actions;
+
+export const { addUsers, removeUsers, filteredUsers } = UserSlice.actions;
