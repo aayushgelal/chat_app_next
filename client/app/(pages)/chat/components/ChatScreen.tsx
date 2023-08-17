@@ -24,6 +24,7 @@ import AddFile from "./AddFile";
 import { removeImage } from "@/app/reducers/imagereducer";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import CallTab from "./CallTab";
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), {
   ssr: false, // Disable server-side rendering for this component
@@ -32,6 +33,11 @@ const EmojiPicker = dynamic(() => import("emoji-picker-react"), {
 export default function ChatScreen() {
   const [message, setMessage] = useState("");
   const [messageList, setMessageList] = useState<MessageType[]>([]);
+  const [incomingCall, setIncomingCall] = useState({
+    isCalling: false,
+    from: "",
+    name: "",
+  });
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -55,9 +61,28 @@ export default function ChatScreen() {
       setMessageList((prevMessages) => [...prevMessages, newMessage]);
     };
 
+    const handleIncomingCall = ({
+      signal,
+      from,
+      name,
+    }: {
+      signal: string;
+      from: string;
+      name: string;
+    }) => {
+      setIncomingCall({ isCalling: true, from: from, name: name });
+      alert("asd");
+    };
+
     socket.current.on("receive-message", handleIncomingMessage);
     socket.current.on("received-image", handleIncomingMessage);
+    socket.current.on("callUser", handleIncomingCall);
+
+    return () => {
+      socket.current.disconnect();
+    };
   }, []);
+
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if ((message && selectedimage.image) || selectedimage.image) {
@@ -126,96 +151,112 @@ export default function ChatScreen() {
   //   };
   // }, [socket]);
 
-  return currentuser.email ? (
+  return (
     <div className="  w-full px-2 flex flex-col">
-      <div className=" items-center justify-between py-4 px-2 border-b-2 h-100 flex font-semibold font-xl space-x-2">
-        <div className="flex  items-center">
-          <img
-            alt=""
-            style={{
-              borderRadius: "50%",
-              height: 60,
-              width: 60,
-              marginRight: 10,
-              objectFit: "cover",
-            }}
-            src="/DEAD.png"
-          />
-          {currentuser.name}
-        </div>
-        <div>
-          <FcVideoCall
-            onClick={() => {
-              router.push(`/call/${fromuser.email}`);
-            }}
-          />
-        </div>
-      </div>
-      <div className="  h-sc  overflow-scroll ">
-        {messageList &&
-          messageList.map((m, index) =>
-            m.from === fromuser.email ? (
-              <SentMessageBox
-                message={m.message}
-                timestamp={m.timestamp}
-                key={index}
-                image={m.imageurl}
+      {incomingCall.isCalling ? (
+        <CallTab name={incomingCall.name} from={incomingCall.from} />
+      ) : null}
+      {currentuser.email ? (
+        <div
+          className={`blur-overlay ${incomingCall.isCalling ? "blur" : ""} `}
+        >
+          <div className="items-center justify-between py-4 px-2 border-b-2 h-100 flex font-semibold font-xl space-x-2">
+            <div className="flex  items-center">
+              <img
+                alt=""
+                style={{
+                  borderRadius: "50%",
+                  height: 60,
+                  width: 60,
+                  marginRight: 10,
+                  objectFit: "cover",
+                }}
+                src="/DEAD.png"
               />
-            ) : (
-              <ReceivedMessageBox
-                message={m.message}
-                timestamp={m.timestamp}
-                key={index}
-                image={m.imageurl}
-              />
-            )
-          )}
-      </div>
-
-      <form onSubmit={(e) => sendMessage(e)}>
-        <div className="  w-9/12  right-auto fixed bottom-0  h-fit p-4">
-          <div className=" relative  flex items-center space-x-5 p-2">
-            <AddFile />
-            <div className="flex items-center bg-white space-x-1 flex-1 py-1 px-3 h-7 text-left  text-sm  w-fit rounded-full outline outline-gray-200">
-              {selectedimage.imageUrl && (
-                <Image
-                  className="absolute bottom-full"
-                  src={selectedimage.imageUrl}
-                  alt=""
-                  height={60}
-                  width={60}
-                />
-              )}
-              <textarea
-                onKeyDown={(e) => (e.key == "Enter" ? sendMessage(e) : null)}
-                placeholder="Aa"
-                title="Message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className="outline-none w-full h-full resize-none "
-              ></textarea>
-              <div className="absolute right-0 bottom-full">
-                {emojipicker && (
-                  <EmojiPicker
-                    onEmojiClick={(e, data) => {
-                      setMessage((prevmessage) => prevmessage + data.emoji);
-                    }}
-                  />
-                )}
-              </div>
-              <BsEmojiLaughing
-                color="gray"
-                size={20}
-                onClick={() => setemojipicker(!emojipicker)}
+              {currentuser.name}
+            </div>
+            <div>
+              <FcVideoCall
+                onClick={() => {
+                  router.push(`/call/${false}`);
+                }}
               />
             </div>
-
-            <button type="submit">
-              <AiOutlineSend color="red" size={20} className="cursor-pointer" />
-            </button>
           </div>
+
+          <div className="  h-sc  overflow-scroll ">
+            {messageList &&
+              messageList.map((m, index) =>
+                m.from === fromuser.email ? (
+                  <SentMessageBox
+                    message={m.message}
+                    timestamp={m.timestamp}
+                    key={index}
+                    image={m.imageurl}
+                  />
+                ) : (
+                  <ReceivedMessageBox
+                    message={m.message}
+                    timestamp={m.timestamp}
+                    key={index}
+                    image={m.imageurl}
+                  />
+                )
+              )}
+          </div>
+
+          <form onSubmit={(e) => sendMessage(e)}>
+            <div className="  w-9/12  right-auto fixed bottom-0  h-fit p-4">
+              <div className=" relative  flex items-center space-x-5 p-2">
+                <AddFile />
+                <div className="flex items-center bg-white space-x-1 flex-1 py-1 px-3 h-7 text-left  text-sm  w-fit rounded-full outline outline-gray-200">
+                  {selectedimage.imageUrl && (
+                    <Image
+                      className="absolute bottom-full"
+                      src={selectedimage.imageUrl}
+                      alt=""
+                      height={60}
+                      width={60}
+                    />
+                  )}
+                  <textarea
+                    onKeyDown={(e) =>
+                      e.key == "Enter" ? sendMessage(e) : null
+                    }
+                    placeholder="Aa"
+                    title="Message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="outline-none w-full h-full resize-none "
+                  ></textarea>
+                  <div className="absolute right-0 bottom-full">
+                    {emojipicker && (
+                      <EmojiPicker
+                        onEmojiClick={(e, data) => {
+                          setMessage((prevmessage) => prevmessage + data.emoji);
+                        }}
+                      />
+                    )}
+                  </div>
+                  <BsEmojiLaughing
+                    color="gray"
+                    size={20}
+                    onClick={() => setemojipicker(!emojipicker)}
+                  />
+                </div>
+
+                <button type="submit">
+                  <AiOutlineSend
+                    color="red"
+                    size={20}
+                    className="cursor-pointer"
+                  />
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
-      </form>
+      ) : null}
     </div>
-  ) : null;
+  );
 }

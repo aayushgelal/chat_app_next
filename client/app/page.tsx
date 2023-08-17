@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import LoginPage from "./(pages)/login/page";
+import ChatPage from "./(pages)/chat/page";
 
 export default function Home() {
   const router = useRouter();
@@ -13,5 +14,5 @@ export default function Home() {
   const [isloggedin, setisloggedin] = useState(false);
   const token = useSelector((state: any) => state.auth.token);
 
-  return <LoginPage />;
+  return isloggedin ? <LoginPage /> : <ChatPage />;
 }
