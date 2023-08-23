@@ -16,31 +16,40 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "@/app/reducers/authreducer";
 import axios, { AxiosResponse } from "axios";
 import { CHECK_USER_ROUTE } from "../../utils/ApiRoutes";
+import { Formik, useFormik } from "formik";
+import * as Yup from "yup";
 
 export default function LoginPage() {
   const router = useRouter();
 
-  const [email, setEmail] = useState("");
-  const [Password, setPassword] = useState("");
   const dispatch = useDispatch();
+  const formik = useFormik({
+    initialValues: { email: "", password: "" },
+    onSubmit: () => {
+      console.log(formik.values.email, formik.values.password);
+      handleSubmit();
+    },
+    validationSchema: Yup.object({
+      email: Yup.string().email().required("Required"),
+      password: Yup.string().required(""),
+    }),
+  });
+
   const loginwithgoogle = async () => {
     const provider = new GoogleAuthProvider();
     const { user } = await signInWithPopup(FirebaseAuth, provider);
     await handlelogin(user);
   };
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-
-    if (!email) {
-      alert("Required Email :");
-    } else {
+  const handleSubmit = async () => {
+    try {
       const { user } = await signInWithEmailAndPassword(
         FirebaseAuth,
-        email,
-        Password
+        formik.values.email,
+        formik.values.password
       );
-
       await handlelogin(user);
+    } catch (e: any) {
+      alert(e);
     }
   };
   const handlelogin = async (user: User) => {
@@ -61,8 +70,9 @@ export default function LoginPage() {
           router.push("/");
         }
       }
-    } catch (e) {
-      alert(e);
+    } catch (e: any) {
+      formik.errors.password = e;
+      formik.errors.email = e;
     }
   };
   // const handlelogin = async () => {
@@ -80,11 +90,6 @@ export default function LoginPage() {
   //   }
   // };
 
-  const validationEmail = (e: any) => {
-    var emailValue = e.target.value;
-
-    setEmail(emailValue);
-  };
   // const handleSubmit = async (e: any) => {
   //   e.preventDefault();
 
@@ -117,55 +122,60 @@ export default function LoginPage() {
     <div className=" flex   p-10 flex-col items-center justify-center">
       <h1 className="text-2xl font-medium">Login</h1>
       <div className="px-10  pb-10 w-screen m-10 md:w-fit shadow-md rounded-lg">
-        <div className=" flex flex-col items-center justify-center  space-y-10">
-          <input
-            placeholder="Username"
-            value={email}
-            onChange={validationEmail}
-            className="logininput"
-          />
-          <input
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-            className="logininput"
-          />
-        </div>
-        <br></br>
-        <div className="relative right-0 w-full flex">
-          <div className="customCheckbox">
-            <span className="customCheckmark" />
-            <input
-              className=" opacity-0 cursor-pointer h-0 w-0"
-              type="checkbox"
-            />
+        <form onSubmit={formik.handleSubmit}>
+          <div className=" flex flex-col items-center justify-center  space-y-10">
+            <div>
+              <input
+                placeholder="Username"
+                value={formik.values.email}
+                name="email"
+                onChange={formik.handleChange}
+                className="logininput"
+              />
+              <p className=" text-red-500">{formik.errors.email}</p>
+            </div>
+            <div>
+              <input
+                placeholder="Password"
+                name="password"
+                type="password"
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                className="logininput"
+              />
+              <p className=" text-red-500">{formik.errors.password}</p>
+            </div>
           </div>
-          Remember Me
-        </div>
+          <br></br>
 
-        <div className="flex items-center justify-center">
-          <button onClick={handleSubmit}>
-            <NavItem link={""} name={"Login"} size={"150px"} />
-          </button>
-        </div>
-        <div className="flex justify-around ">
-          <div className="underline cursor-pointer text-sky-600">
-            Forgot Password?
+          <div className="flex items-center justify-center">
+            <button type="submit">
+              <NavItem link={""} name={"Login"} size={"150px"} />
+            </button>
           </div>
-          <button onClick={() => router.push("/signup")}>
-            <div className=" underline cursor-pointer text-sky-600">Signup</div>
-          </button>
-        </div>
-        <br></br>
-        <button className="w-full">
-          {" "}
-          <div
-            className="bg-sky-600  text-center p-2 rounded-lg text-white flex items-center justify-center "
-            onClick={loginwithgoogle}
-          >
-            <FcGoogle color="red" size={40} className="mr-5" /> Login With
-            Google
+
+          <div className="flex justify-around ">
+            <div className="underline cursor-pointer text-gray-700">
+              Don't Have an Account ?
+            </div>
+            <button onClick={() => router.push("/signup")}>
+              <div className=" underline cursor-pointer text-sky-600">
+                Signup
+              </div>
+            </button>
           </div>
-        </button>
+          <br></br>
+          <button className="w-full">
+            {" "}
+            <div
+              className="bg-sky-600  text-center p-2 rounded-lg text-white flex items-center justify-center "
+              onClick={loginwithgoogle}
+            >
+              <FcGoogle color="red" size={40} className="mr-5" /> Login With
+              Google
+            </div>
+          </button>
+        </form>
       </div>
     </div>
   );

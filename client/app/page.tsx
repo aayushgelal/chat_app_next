@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import Head from "next/head";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import LoginPage from "./(pages)/login/page";
 import ChatPage from "./(pages)/chat/page";
 
@@ -13,6 +13,11 @@ export default function Home() {
 
   const [isloggedin, setisloggedin] = useState(false);
   const token = useSelector((state: any) => state.auth.token);
+  if (!token) {
+    redirect("/login");
+  } else {
+    redirect("/chat");
+  }
 
-  return isloggedin ? <LoginPage /> : <ChatPage />;
+  return <main></main>;
 }

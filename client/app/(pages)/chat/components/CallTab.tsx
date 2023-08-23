@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { FcEndCall, FcVideoCall } from "react-icons/fc";
@@ -5,10 +6,13 @@ import { FcEndCall, FcVideoCall } from "react-icons/fc";
 export default function CallTab({
   name,
   from,
+  signal,
 }: {
+  signal: any;
   name: string;
   from: string;
 }) {
+  console.log(signal);
   const router = useRouter();
   return (
     <div className="flex items-center justify-center inset-0 z-10 h-full w-full absolute  ">
@@ -18,7 +22,13 @@ export default function CallTab({
         <h2 className=" font-medium">{from}</h2>
         <div className="flex justify-around w-full">
           <div className=" rounded-full p-4 bg-green-50">
-            <FcVideoCall size={40} onClick={() => router.push("call/true")} />
+            <Link
+              href={{
+                pathname: "/call/true",
+              }}
+            >
+              <FcVideoCall size={40} />
+            </Link>
           </div>
           <div className=" rounded-full  p-4 bg-green-50">
             <FcEndCall size={40} />

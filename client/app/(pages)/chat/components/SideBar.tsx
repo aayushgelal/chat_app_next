@@ -6,16 +6,20 @@ import { RootState } from "@/app/store";
 import { userState } from "@/app/types";
 
 export default function SideBar() {
-  const users: userState[] = useSelector(
+  const allusers: userState[] = useSelector(
     (state: RootState) => state.users.filtereduser
+  );
+  const currentuser = useSelector((state: RootState) => state.auth);
+  const otherusers: userState[] = allusers.filter(
+    (user) => user.email != currentuser.email
   );
 
   return (
     <div className="w-96  p-4 space-y-3 border-t-2  border-r-2 ">
       <h1 className="font-semibold text-2xl "> Chats</h1>
       <SearchBar />
-      {users
-        ? users.map((user: any) => {
+      {otherusers
+        ? otherusers.map((user: any) => {
             return <SideBarItem key={user.id} user={user} />;
           })
         : null}

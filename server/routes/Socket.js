@@ -8,6 +8,8 @@ const prisma = new PrismaClient();
 export const app = express();
 export const server = http.createServer(app);
 
+const onlineUsers = {}; // To store online users
+
 export const io = new Server(server, {
   cors: {
     origin: "*",
@@ -20,14 +22,24 @@ export const io = new Server(server, {
 io.on("connection", (socket) => {
   socket.on("join", (useremail) => {
     socket.join(useremail);
+    onlineUsers[useremail] = socket.id;
+    io.emit("updateOnlineUsers", Object.keys(onlineUsers));
+  });
+  socket.on("disconnect", () => {
+    const userId = Object.keys(onlineUsers).find(
+      (key) => onlineUsers[key] === socket.id
+    );
+    if (userId) {
+      delete onlineUsers[userId];
+      io.emit("updateOnlineUsers", Object.keys(onlineUsers));
+    }
   });
   socket.on("callUser", ({ userToCall, signalData, from, name }) => {
     io.to(userToCall).emit("callUser", { signal: signalData, from, name });
   });
-  socket.on("answerCall", ({to,signal}) => {
-    console.log(to);
-
-    io.to(to).emit("callAccepted", signal);
+  socket.on("answerCall", ({ from, signal }) => {
+    console.log(from, signal, "callaccepted");
+    io.to(from).emit("callAccepted", signal);
   });
 
   socket.on("add-message", async (data, from, to) => {
@@ -37,6 +49,7 @@ io.on("connection", (socket) => {
         from: from,
         to: to,
         timestamp: Date.now(),
+        status: "sent",
       };
       io.to(to).to(from).emit("receive-message", newMessage);
 
@@ -49,6 +62,7 @@ io.on("connection", (socket) => {
           receiver: {
             connect: { email: to }, // Assuming you have the receiver's user email
           },
+          messageStatus: "delivered", // Mark the message as delivered
         },
       });
     } catch (err) {

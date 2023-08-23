@@ -34,6 +34,7 @@ interface MessageType {
   delivered?: string;
   timestamp?: Date;
   imageurl?: string;
+  status: string;
 }
 
 export type {

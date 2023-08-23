@@ -25,6 +25,7 @@ import { removeImage } from "@/app/reducers/imagereducer";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import CallTab from "./CallTab";
+import { addSignal } from "@/app/reducers/signalreducer";
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), {
   ssr: false, // Disable server-side rendering for this component
@@ -32,21 +33,46 @@ const EmojiPicker = dynamic(() => import("emoji-picker-react"), {
 
 export default function ChatScreen() {
   const [message, setMessage] = useState("");
+  const messageContainerRef = useRef<HTMLDivElement>(null);
+
   const [messageList, setMessageList] = useState<MessageType[]>([]);
   const [incomingCall, setIncomingCall] = useState({
     isCalling: false,
     from: "",
     name: "",
+    signal: null,
   });
   const dispatch = useDispatch();
   const router = useRouter();
 
   const currentuser = useSelector((state: RootState) => state.current_user);
   const fromuser = useSelector((state: RootState) => state.auth);
+  const [isRecipientOnline, setRecipientOnline] = useState(false);
   const selectedimage = useSelector((state: RootState) => state.selected_image);
   const [emojipicker, setemojipicker] = useState(false);
   const socket = useRef(io("localhost:4000"));
   socket.current.emit("join", fromuser.email);
+  useEffect(() => {
+    // ... your existing code ...
+    console.log(messageContainerRef.current?.scrollHeight);
+    console.log(messageContainerRef.current?.scrollTop);
+    // Scroll down to the latest message when messageList updates
+    if (messageContainerRef.current) {
+      messageContainerRef.current.scroll({
+        behavior: "smooth",
+        top: messageContainerRef.current.scrollHeight,
+      });
+
+      // messageContainerRef.current.scrollTop =
+      //   messageContainerRef.current.scrollHeight;
+      //   messageContainerRef.current.animate()
+
+      // console.log(messageContainerRef.current?.scrollHeight);
+      // console.log(messageContainerRef.current?.scrollTop);
+    }
+
+    // ... your existing code ...
+  }, [currentuser, messageList]);
 
   useEffect(() => {
     const handleIncomingMessage = (messageItem: any) => {
@@ -56,6 +82,7 @@ export default function ChatScreen() {
         to: messageItem.to,
         timestamp: messageItem.timestamp,
         imageurl: `${Host}${messageItem.imageurl}`,
+        status: isRecipientOnline ? "delivered" : "sent", // Set the status based on recipient's online status
       };
       console.log(newMessage.imageurl);
       setMessageList((prevMessages) => [...prevMessages, newMessage]);
@@ -66,20 +93,41 @@ export default function ChatScreen() {
       from,
       name,
     }: {
-      signal: string;
+      signal: any;
       from: string;
       name: string;
     }) => {
-      setIncomingCall({ isCalling: true, from: from, name: name });
-      alert("asd");
+      console.log(from, name, signal);
+      dispatch(addSignal({ signal, from, name }));
+      setIncomingCall({
+        isCalling: true,
+        signal: signal,
+        from: from,
+        name: name,
+      });
+    };
+    const updateOnlineUsers = (users: any) => {
+      const isRecipientNowOnline = users.includes(currentuser.email);
+      setRecipientOnline(isRecipientNowOnline);
+      if (isRecipientNowOnline) {
+        // Iterate through the existing messages and update their status to 'delivered'
+        const updatedMessageList = messageList.map((m) => {
+          if (m.to === currentuser.email && m.status === "sent") {
+            return { ...m, status: "delivered" };
+          }
+          return m;
+        });
+        setMessageList(updatedMessageList);
+      }
     };
 
     socket.current.on("receive-message", handleIncomingMessage);
     socket.current.on("received-image", handleIncomingMessage);
     socket.current.on("callUser", handleIncomingCall);
+    socket.current.on("updateOnlineUsers", updateOnlineUsers);
 
     return () => {
-      socket.current.disconnect();
+      socket.current.emit("disconnect");
     };
   }, []);
 
@@ -94,7 +142,6 @@ export default function ChatScreen() {
 
       axios.post(ADD_IMAGE_ROUTE, formData);
 
-      setMessage("");
       dispatch(removeImage({}));
     } else if (message) {
       socket.current.emit(
@@ -104,6 +151,7 @@ export default function ChatScreen() {
         currentuser.email
       );
     }
+    setMessage("");
   };
 
   useEffect(() => {
@@ -118,7 +166,6 @@ export default function ChatScreen() {
           })
           .then((response) => response.data);
         if (messages != null) {
-          console.log(messages);
           const destructuredmessages: MessageType[] = messages?.map(
             (messageItem: any) => ({
               message: messageItem.messageText,
@@ -154,13 +201,17 @@ export default function ChatScreen() {
   return (
     <div className="  w-full px-2 flex flex-col">
       {incomingCall.isCalling ? (
-        <CallTab name={incomingCall.name} from={incomingCall.from} />
+        <CallTab
+          signal={incomingCall.signal}
+          name={incomingCall.name}
+          from={incomingCall.from}
+        />
       ) : null}
       {currentuser.email ? (
         <div
           className={`blur-overlay ${incomingCall.isCalling ? "blur" : ""} `}
         >
-          <div className="items-center justify-between py-4 px-2 border-b-2 h-100 flex font-semibold font-xl space-x-2">
+          <div className="items-center justify-between py-4 px-2 border-b-2  h-20 flex font-semibold font-xl space-x-2">
             <div className="flex  items-center">
               <img
                 alt=""
@@ -184,7 +235,10 @@ export default function ChatScreen() {
             </div>
           </div>
 
-          <div className="  h-sc  overflow-scroll ">
+          <div
+            ref={messageContainerRef}
+            className="  h-[calc(100vh-180px)] overflow-scroll "
+          >
             {messageList &&
               messageList.map((m, index) =>
                 m.from === fromuser.email ? (
@@ -193,6 +247,7 @@ export default function ChatScreen() {
                     timestamp={m.timestamp}
                     key={index}
                     image={m.imageurl}
+                    status={m.status}
                   />
                 ) : (
                   <ReceivedMessageBox
@@ -206,7 +261,7 @@ export default function ChatScreen() {
           </div>
 
           <form onSubmit={(e) => sendMessage(e)}>
-            <div className="  w-9/12  right-auto fixed bottom-0  h-fit p-4">
+            <div className="  w-9/12  right-auto fixed bottom-0  h-fit ">
               <div className=" relative  flex items-center space-x-5 p-2">
                 <AddFile />
                 <div className="flex items-center bg-white space-x-1 flex-1 py-1 px-3 h-7 text-left  text-sm  w-fit rounded-full outline outline-gray-200">
