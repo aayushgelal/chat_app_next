@@ -18,7 +18,7 @@ export const checkUser = async (req, res, next) => {
 };
 export const signup = async (req, res, next) => {
   try {
-    const { email, name, userId } = req.body;
+    const { email, name, userId ,avatar} = req.body;
     console.log(email, name);
     if (!email || !name) {
       return res.sendStatus(404);
@@ -28,6 +28,7 @@ export const signup = async (req, res, next) => {
           userId: userId,
           name: name,
           email: email,
+          avatar:avatar
         },
       });
       return res.sendStatus(200);
@@ -45,6 +46,7 @@ export const getUsers = async (req, res, next) => {
         id: true,
         name: true,
         email: true,
+        avatar:true
       },
     });
 

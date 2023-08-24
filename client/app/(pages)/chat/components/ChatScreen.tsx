@@ -127,7 +127,7 @@ export default function ChatScreen() {
     socket.current.on("updateOnlineUsers", updateOnlineUsers);
 
     return () => {
-      socket.current.emit("disconnect");
+      socket.current.emit("disconnected");
     };
   }, []);
 
@@ -222,7 +222,7 @@ export default function ChatScreen() {
                   marginRight: 10,
                   objectFit: "cover",
                 }}
-                src="/DEAD.png"
+                src={`avatars/${currentuser.avatar}.png`}
               />
               {currentuser.name}
             </div>

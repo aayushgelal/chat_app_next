@@ -153,6 +153,7 @@ export default function LoginPage() {
               <NavItem link={""} name={"Login"} size={"150px"} />
             </button>
           </div>
+          </form>
 
           <div className="flex justify-around ">
             <div className="underline cursor-pointer text-gray-700">
@@ -175,7 +176,6 @@ export default function LoginPage() {
               Google
             </div>
           </button>
-        </form>
       </div>
     </div>
   );

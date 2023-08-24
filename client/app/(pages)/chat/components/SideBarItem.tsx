@@ -8,7 +8,8 @@ export default function SideBarItem({ user }: any) {
 
   return (
     <div
-      className="m-2 rounded-2xl py-4 space-x-3 flex w-full  hover:bg-gray-50 cursor-pointer "
+      className="m-2 rounded-2xl py-4 space-x-3 flex w-full items-center
+       hover:bg-gray-50 cursor-pointer "
       onClick={() => {
         dispatch(add_current_user(user));
       }}
@@ -21,16 +22,11 @@ export default function SideBarItem({ user }: any) {
           width: 60,
           objectFit: "cover",
         }}
-        src="/DEAD.png"
+        src={`/avatars/${user.avatar}.png`}
       />
       <div className="flex flex-col justify-start">
         <h1 className="font-semibold">{user.name}</h1>
-        <div className="flex space-x-1 text-sm  items-baseline">
-          <h1>hello Bro</h1>
-          <h1 className="text-gray-500 text-xs ">7m</h1>
-        </div>
       </div>
-      <div className="flex items-center">.</div>
     </div>
   );
 }

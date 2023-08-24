@@ -25,7 +25,7 @@ io.on("connection", (socket) => {
     onlineUsers[useremail] = socket.id;
     io.emit("updateOnlineUsers", Object.keys(onlineUsers));
   });
-  socket.on("disconnect", () => {
+  socket.on("disconnected", () => {
     const userId = Object.keys(onlineUsers).find(
       (key) => onlineUsers[key] === socket.id
     );
@@ -33,6 +33,7 @@ io.on("connection", (socket) => {
       delete onlineUsers[userId];
       io.emit("updateOnlineUsers", Object.keys(onlineUsers));
     }
+    socket.disconnect();
   });
   socket.on("callUser", ({ userToCall, signalData, from, name }) => {
     io.to(userToCall).emit("callUser", { signal: signalData, from, name });

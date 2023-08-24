@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, createContext, SetStateAction } from "react";
 import "./login.global.css";
 import NavItem from "../../components/NavItem";
 import { useRouter } from "next/navigation";
@@ -19,14 +19,24 @@ import { SIGNUP_USER_ROUTE } from "@/app/utils/ApiRoutes";
 import Link from "next/link";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import AvatarSelector from "@/app/components/AvatarSelector";
+
+export const AvatarContext = createContext<
+  | {
+      selectedavatar: string;
+      setselectedavatar: React.Dispatch<React.SetStateAction<string>>|null;
+    }
+  | undefined
+>({selectedavatar:"",setselectedavatar:null});
 
 export default function SignupPage() {
   const router = useRouter();
 
-  const [Password, setPassword] = useState("");
+  const [selectedavatar, setselectedavatar] = useState<string>("");
+
   const dispatch = useDispatch();
   const formik = useFormik({
-    initialValues: { email: "", password: "", name: " " },
+    initialValues: { email: "", password: "", name: "" },
     onSubmit: () => {
       handleSubmit();
     },
@@ -55,8 +65,9 @@ export default function SignupPage() {
       if (user.email) {
         const data = await axios.post(SIGNUP_USER_ROUTE, {
           email: user.email,
-          name: user.displayName ? user.displayName : name,
+          name: user.displayName ? user.displayName : formik.values.name,
           userId: user.uid,
+          avatar: selectedavatar,
         });
         console.log(data);
         if (data.status == 200) {
@@ -75,72 +86,77 @@ export default function SignupPage() {
   };
 
   return (
-    <div className=" flex   p-10 flex-col items-center justify-center">
-      <h1 className="text-2xl font-medium">SignUp</h1>
+    <AvatarContext.Provider value={{ selectedavatar, setselectedavatar }}>
+      <div className=" flex   p-10 flex-col items-center justify-center">
+        <h1 className="text-2xl font-medium">SignUp</h1>
 
-      <div className="px-10  pb-10 w-screen m-10 md:w-fit shadow-md rounded-lg">
-        <form onSubmit={formik.handleSubmit}>
-          <div className=" flex flex-col items-center justify-center  space-y-10">
-            <div>
-              <input
-                name="name"
-                placeholder="Name"
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                className="logininput"
-              />
-              <p className="text-red-500">{formik.errors.name}</p>
-            </div>
-            <div>
-              <input
-                name="email"
-                placeholder="Email"
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                className="logininput"
-              />
+        <div className="px-10  pb-10 w-screen m-10 md:w-fit shadow-md rounded-lg">
+          <form onSubmit={formik.handleSubmit}>
+            <div className=" flex flex-col items-center justify-center  space-y-10">
+              <AvatarSelector />
 
-              <p className=" text-red-500">{formik.errors.email}</p>
-            </div>
-            <div>
-              <input
-                name="password"
-                placeholder="Password"
-                className="logininput"
-                value={formik.values.password}
-                onChange={formik.handleChange}
-              />
-              <p className=" text-red-500">{formik.errors.password}</p>
-            </div>
-          </div>
-          <br></br>
+              <div>
+                <input
+                  name="name"
+                  placeholder="Name"
+                  value={formik.values.name}
+                  onChange={formik.handleChange}
+                  className="logininput"
+                />
 
-          <div className="flex items-center justify-center">
-            <button type="submit">
-              <NavItem link={""} name={"Signup"} size={"150px"} />
+                <p className="text-red-500">{formik.errors.name}</p>
+              </div>
+              <div>
+                <input
+                  name="email"
+                  placeholder="Email"
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  className="logininput"
+                />
+
+                <p className=" text-red-500">{formik.errors.email}</p>
+              </div>
+              <div>
+                <input
+                  name="password"
+                  placeholder="Password"
+                  className="logininput"
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                />
+                <p className=" text-red-500">{formik.errors.password}</p>
+              </div>
+            </div>
+            <br></br>
+
+            <div className="flex items-center justify-center">
+              <button type="submit">
+                <NavItem link={""} name={"Signup"} size={"150px"} />
+              </button>
+            </div>
+            <div className="flex justify-around ">
+              <h1 className=" text-gray-500 font-extralight">
+                Already Have an Account?{" "}
+              </h1>
+              <div className=" underline cursor-pointer text-sky-600 mx-2">
+                <Link href={"/login"}>Sign In</Link>
+              </div>
+            </div>
+            <br></br>
+            <button className="w-full">
+              {" "}
+              <div
+                className="bg-sky-600  text-center p-2 rounded-lg text-white flex items-center justify-center "
+                onClick={loginwithgoogle}
+              >
+                <FcGoogle color="red" size={40} className="mr-5" /> Login With
+                Google
+              </div>
             </button>
-          </div>
-          <div className="flex justify-around ">
-            <h1 className=" text-gray-500 font-extralight">
-              Already Have an Account?{" "}
-            </h1>
-            <div className=" underline cursor-pointer text-sky-600 mx-2">
-              <Link href={"/login"}>Sign In</Link>
-            </div>
-          </div>
-          <br></br>
-          <button className="w-full">
-            {" "}
-            <div
-              className="bg-sky-600  text-center p-2 rounded-lg text-white flex items-center justify-center "
-              onClick={loginwithgoogle}
-            >
-              <FcGoogle color="red" size={40} className="mr-5" /> Login With
-              Google
-            </div>
-          </button>
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
+    </AvatarContext.Provider>
   );
 }

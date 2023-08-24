@@ -16,6 +16,7 @@ model User{
   name    String
   // unique identifier for each user
   email String @unique
+  avatar String @default("avatar1")
   sent_Messages Messages[] @relation("sentMessages")
   revieved_Messages Messages[] @relation("receivedMessages")
 

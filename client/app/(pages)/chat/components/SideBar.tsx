@@ -9,9 +9,9 @@ export default function SideBar() {
   const allusers: userState[] = useSelector(
     (state: RootState) => state.users.filtereduser
   );
-  const currentuser = useSelector((state: RootState) => state.auth);
+  const me = useSelector((state: RootState) => state.auth);
   const otherusers: userState[] = allusers.filter(
-    (user) => user.email != currentuser.email
+    (user) => user.email != me.email
   );
 
   return (
@@ -20,7 +20,7 @@ export default function SideBar() {
       <SearchBar />
       {otherusers
         ? otherusers.map((user: any) => {
-            return <SideBarItem key={user.id} user={user} />;
+            return <SideBarItem key={user.id} user={user}  />;
           })
         : null}
     </div>
