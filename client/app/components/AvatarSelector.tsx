@@ -4,7 +4,12 @@ export default function AvatarSelector() {
   const context = useContext(AvatarContext);
   const avatars = ["avatar1", "avatar2", "avatar3", "avatar4", "avatar5"];
   const handleAvatarChange = (avatar: string) => {
-    context?.setselectedavatar ? context.setselectedavatar(avatar) : null;
+    if (avatar == null) {
+      avatar = "avatar1";
+      context?.setselectedavatar ? context.setselectedavatar(avatar) : null;
+    } else {
+      context?.setselectedavatar ? context.setselectedavatar(avatar) : null;
+    }
   };
   return (
     <div>
