@@ -24,10 +24,10 @@ import AvatarSelector from "@/app/components/AvatarSelector";
 export const AvatarContext = createContext<
   | {
       selectedavatar: string;
-      setselectedavatar: React.Dispatch<React.SetStateAction<string>>|null;
+      setselectedavatar: React.Dispatch<React.SetStateAction<string>> | null;
     }
   | undefined
->({selectedavatar:"",setselectedavatar:null});
+>({ selectedavatar: "", setselectedavatar: null });
 
 export default function SignupPage() {
   const router = useRouter();
@@ -68,6 +68,7 @@ export default function SignupPage() {
           name: user.displayName ? user.displayName : formik.values.name,
           userId: user.uid,
           avatar: selectedavatar,
+          googlesignin: user.displayName ? true : false,
         });
         console.log(data);
         if (data.status == 200) {
@@ -135,26 +136,26 @@ export default function SignupPage() {
                 <NavItem link={""} name={"Signup"} size={"150px"} />
               </button>
             </div>
-            <div className="flex justify-around ">
-              <h1 className=" text-gray-500 font-extralight">
-                Already Have an Account?{" "}
-              </h1>
-              <div className=" underline cursor-pointer text-sky-600 mx-2">
-                <Link href={"/login"}>Sign In</Link>
-              </div>
-            </div>
-            <br></br>
-            <button className="w-full">
-              {" "}
-              <div
-                className="bg-sky-600  text-center p-2 rounded-lg text-white flex items-center justify-center "
-                onClick={loginwithgoogle}
-              >
-                <FcGoogle color="red" size={40} className="mr-5" /> Login With
-                Google
-              </div>
-            </button>
           </form>
+          <div className="flex justify-around ">
+            <h1 className=" text-gray-500 font-extralight">
+              Already Have an Account?{" "}
+            </h1>
+            <div className=" underline cursor-pointer text-sky-600 mx-2">
+              <Link href={"/login"}>Sign In</Link>
+            </div>
+          </div>
+          <br></br>
+          <button className="w-full">
+            {" "}
+            <div
+              className="bg-sky-600  text-center p-2 rounded-lg text-white flex items-center justify-center "
+              onClick={loginwithgoogle}
+            >
+              <FcGoogle color="red" size={40} className="mr-5" /> Login With
+              Google
+            </div>
+          </button>
         </div>
       </div>
     </AvatarContext.Provider>

@@ -11,24 +11,37 @@ export const checkUser = async (req, res, next) => {
     const data = await prisma.user.findUnique({
       where: { email: email },
     });
+    if(data){
     return res.send({ email: email, name: data?.name });
+    }
+    else{
+      return res.sendStatus(404)
+    }
   } catch (err) {
     next(err);
   }
 };
 export const signup = async (req, res, next) => {
   try {
-    const { email, name, userId ,avatar} = req.body;
+    const { email, name, userId, avatar, googlesignin } = req.body;
     console.log(email, name);
     if (!email || !name) {
       return res.sendStatus(404);
     } else {
+      if (googlesignin) {
+        const data = await prisma.user.findUnique({
+          where: { email: email },
+        });
+        if (data) {
+          return res.status(200);
+        }
+      }
       await prisma.user.create({
         data: {
           userId: userId,
           name: name,
           email: email,
-          avatar:avatar
+          avatar: avatar,
         },
       });
       return res.sendStatus(200);
@@ -46,7 +59,7 @@ export const getUsers = async (req, res, next) => {
         id: true,
         name: true,
         email: true,
-        avatar:true
+        avatar: true,
       },
     });
 

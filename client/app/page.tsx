@@ -14,7 +14,7 @@ export default function Home() {
   const [isloggedin, setisloggedin] = useState(false);
   const token = useSelector((state: any) => state.auth.token);
   if (!token) {
-    redirect("/login");
+    redirect("/signup");
   } else {
     redirect("/chat");
   }

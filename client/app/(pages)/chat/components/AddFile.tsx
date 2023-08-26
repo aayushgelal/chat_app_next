@@ -1,13 +1,10 @@
 import { addImage } from "@/app/reducers/imagereducer";
 import React, {
   FormEvent,
-  LegacyRef,
-  ReactEventHandler,
   useRef,
   useState,
 } from "react";
 import { AiFillPlusCircle } from "react-icons/ai";
-import { BsFileArrowUp } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 
 export default function AddFile() {

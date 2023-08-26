@@ -155,6 +155,8 @@ export default function ChatScreen() {
   };
 
   useEffect(() => {
+    const nomessage: MessageType[] = [];
+    setMessageList(nomessage);
     const get_prev_message = async () => {
       if (currentuser.email) {
         const { messages } = await axios
