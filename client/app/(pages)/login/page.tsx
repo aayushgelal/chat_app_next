@@ -157,7 +157,7 @@ export default function LoginPage() {
 
           <div className="flex justify-around ">
             <div className="underline cursor-pointer text-gray-700">
-              Don't Have an Account ?
+            Don&apos;t Have an Account ?
             </div>
             <button onClick={() => router.push("/signup")}>
               <div className=" underline cursor-pointer text-sky-600">
