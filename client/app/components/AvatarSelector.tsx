@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
-import { AvatarContext } from "../(pages)/signup/page";
+import { AvatarContext } from "./AvatarContext";
+
 export default function AvatarSelector() {
   const context = useContext(AvatarContext);
   const avatars = ["avatar1", "avatar2", "avatar3", "avatar4", "avatar5"];

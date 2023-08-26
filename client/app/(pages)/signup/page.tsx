@@ -20,14 +20,8 @@ import Link from "next/link";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import AvatarSelector from "@/app/components/AvatarSelector";
+import { AvatarContext } from "@/app/components/AvatarContext";
 
-export const AvatarContext = createContext<
-  | {
-      selectedavatar: string;
-      setselectedavatar: React.Dispatch<React.SetStateAction<string>> | null;
-    }
-  | undefined
->({ selectedavatar: "", setselectedavatar: null });
 
 export default function SignupPage() {
   const router = useRouter();
